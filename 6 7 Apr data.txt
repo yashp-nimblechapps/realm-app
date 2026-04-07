@@ -1,0 +1,243 @@
+Realm - Local Mobile Database
+
+1. What is Realm?
+Realm is a fast, local mobile database for React Native apps
+
+Stores data on device (offline)
+Works with JavaScript objects (not SQL)
+Automatically updates UI when data changes
+
+Key Idea:
+Realm = Local Database + Live Data + High Performance
+
+2. How Realm Works
+Data stored in binary database file
+You define Schema (structure)
+You interact using objects (like JS)
+Example
+    {
+    _id: 1,
+    title: "Learn Realm",
+    isCompleted: false
+    }
+Realm stores this directly — no JSON conversion needed
+
+3. Why Use Realm?
+
+Advantages:
+    Very fast
+    Object-based (no SQL)
+    Live updates (auto UI refresh)
+    Offline-first
+    Handles large data easily
+
+4. Comparison
+
+AsyncStorage
+    Key-value only
+    Slow for large data
+    No queries
+    Use for:
+        Tokens
+        Settings
+
+SQLite
+    SQL-based
+    More complex
+    Use if:
+    You need SQL queries
+
+Firebase
+    Cloud database
+    Requires internet
+     Use if:
+    Real-time multi-user sync
+
+Realm Best For:
+    Offline apps
+    Structured data
+    Fast performance
+
+5. Setup (Expo)
+
+Step 1: Create App
+npx create-expo-app realm-app
+cd realm-app
+
+Step 2: Install Realm
+npm install realm
+
+Step 3: Dev Build (IMPORTANT)
+npx expo install expo-dev-client
+npx expo prebuild
+npx expo run:android
+
+Realm does NOT work in Expo Go
+
+6. Schema (Core Concept)
+
+Schema = structure of data
+
+Example:
+export const TaskSchema = {
+  name: 'Task',
+  primaryKey: '_id',
+  properties: {
+    _id: 'int',
+    title: 'string',
+    isCompleted: { type: 'bool', default: false },
+    createdAt: { type: 'date', default: () => new Date() }
+  }
+};
+
+Important
+name → table
+properties → fields
+primaryKey → unique id
+
+7. Database Connection
+import Realm from 'realm';
+
+Realm.open({
+  schema: [TaskSchema],
+});
+
+8. CRUD Operations
+
+    CREATE
+        realm.write(() => {
+        realm.create('Task', {
+            _id: Date.now(),
+            title: 'New Task',
+        });
+        });
+
+    READ
+        const tasks = realm.objects('Task');
+        Returns live data
+
+    UPDATE
+        realm.write(() => {
+        const task = realm.objectForPrimaryKey('Task', id);
+        task.isCompleted = true;
+        });
+
+    DELETE
+        realm.write(() => {
+        realm.delete(task);
+        });
+
+RULE
+All writes MUST be inside:
+realm.write(() => {})
+
+9. Realm Hooks (Modern Way)
+
+Install:
+npm install @realm/react
+
+Setup Provider: 
+    import { RealmProvider } from '@realm/react';
+
+    <RealmProvider schema={[TaskSchema]}>
+    <App />
+    </RealmProvider>
+
+Hooks: 
+useRealm():
+    Hook to access the Realm database instance.
+    Used to perform write operations (create, update, delete).
+    const realm = useRealm();
+
+useQuery():
+    Hook to fetch live collection of data from Realm.
+    Automatically updates UI when data changes.
+    const tasks = useQuery('Task');
+
+LIVE DATA (auto updates UI)
+
+useObject():
+    Hook to fetch a single object by primary key.
+    Returns live object that updates in real-time.
+    const task = useObject('Task', id);
+
+
+10. Live Updates (Most Important)
+
+No need to reload data manually
+const tasks = useQuery('Task');
+
+UI updates automatically when:
+    Add
+    Delete
+    Update
+
+11. Queries & Filtering
+
+const completedTasks = useQuery('Task').filtered('isCompleted == true');
+
+Sorting
+const tasks = useQuery('Task').sorted('createdAt', true);
+
+12. Relationships
+
+Example:
+    const UserSchema = {
+        name: 'User',
+        properties: {
+            _id: 'int',
+            name: 'string',
+            tasks: 'Task[]'
+        }
+    };
+
+One user → many tasks
+
+13. Offline-First Concept:
+
+Works without internet
+Data stored locally
+Sync later if needed
+
+Example Flow
+    Save locally (Realm)
+    Sync to server later
+
+14. Sync Strategy
+Realm = local DB
+
+Sync using API:
+await fetch('/api/tasks', { method: 'POST' });
+
+15. Performance Benefits
+
+No JSON parsing
+Lazy loading
+Live updates
+Handles large data
+
+16. Best Practices
+Always use primary key (primaryKey: '_id')
+Keep schema simple
+Use hooks instead of manual DB
+Avoid reopening DB
+Use indexing - title: { type: 'string', indexed: true }
+Always wrap writes
+
+17. Folder Structure (Production)
+    /src
+    ├── models
+    ├── screens
+    ├── components
+    ├── hooks
+    ├── services
+    ├── utils
+
+18. Mini Project
+Task Manager App
+    Features:
+    Add task
+    Delete task
+    Toggle complete
+    Auto UI updates
+    Offline support

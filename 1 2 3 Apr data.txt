@@ -1,0 +1,109 @@
+Expo_App-Firebase
+
+Authentication:
+createUserWithEmailAndPassword, 
+sendEmailVerification 
+signInWithEmailAndPassword
+
+Database :
+1 Realtime Database
+2 Firestore Database
+---------------------------------------------------------------------------------
+
+Expo_App-Firebase
+
+Authentication:
+createUserWithEmailAndPassword, 
+sendEmailVerification 
+signInWithEmailAndPassword
+
+index.tsx
+sign-up.tsx
+sign-in.tsx
+welcome.tsx
+
+Database :
+1 Realtime Database
+    A cloud-hosted NoSQL database that stores data as a single JSON tree.
+    It syncs data instantly in real-time across all connected clients.
+
+2 Firestore Database
+    A scalable NoSQL database that stores data in collections and documents.
+    It supports advanced queries, better structure, and offline support.
+
+---------------------------------------------------------------------------------
+
+Project -> Daily Tasks + Social Feed App
+
+Create New Expo App
+NativeWind for styling
+Setup Firebase (Authentication & Firestore Database)
+
+In Authentication
+    done using email and password plus created there a database named users
+        const handleSignup = () => {
+            createUserWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                const user = userCredential.user;
+
+                // store extra data
+                addDoc(collection(db, 'users'), {
+                    uid: user.uid,
+                    name: name,
+                    email: email,
+                })
+                sendEmailVerification(user)
+                .then(() => {
+                    Alert.alert('Verification email sent! Please check you inbox')
+                })
+                .catch((error) => {
+                    setErrorMessage('Error sending verfication email');
+                })
+                setName('')
+                setEmail('')
+                setPassword('')
+            })
+            .catch((error) => {
+                const errorMsg = error.message;
+                setErrorMessage(errorMsg);
+            })     
+        }
+
+Also done bottom tabs with three screens (Tasks, Feed, Profile)
+Using Expo Router Tabs
+Bottom Tabs using Expo Router (_layout.tsx)
+Tab icons using Ionicons
+
+Global Theme Context - Theme toggle (dark/light)
+AsyncStorage for saving theme
+
+Tasks screen
+    Fetch tasks from Firestore (user-specific)
+    Create task (FAB + Modal + input field)
+    Mark task as completed (checkbox toggle)
+    Show delete icon ONLY for completed tasks
+
+Feed screen
+    Axios GET API fetch(quotes)
+    Axios POST, PATCH, DELETE (quotes)
+    Pull-to-refresh
+    Fetches quotes and display in FlatList in card format
+    (quote and author name)
+
+Profile screen
+    Dark / Light theme support (ThemeContext)
+    Avatar, Name, Email
+    Task count tracking (total + completed for profile)
+    Logout Button
+
+///////////////////////////////////////////////
+what can done later
+
+in feed screen
+    Author-based Filter
+    Group quotes by author
+    Tap author → see all their quotes
+
+    Save / Favorite Quotes      
+    Store selected quotes in Firebase / AsyncStorage
+    Show in Profile tab

@@ -1,0 +1,236 @@
+EXPO ROUTER
+Setup of NativeWind (Tailwind)
+Router (useRouter) (Stack Navigation)
+Tab Routing (Using TabView)
+Drawer Routing (useDrawerStatus)
+Dynamic Routing
+Nested Routing
+React Hook Form & Yup (yup, yupResolver, Controller, useForm)
+Clerk Authentication and User Management
+
+STEPS TO INSTALL NATIVEWIND (TAILWIND)
+-----------------------------------------------------------------------------------------
+Setup of NativeWind (Tailwind)
+Lets you use Tailwind CSS classes like className="bg-blue-500 p-4" directly in React Native.
+It converts those classes into React Native styles at runtime, making styling faster and cleaner.
+
+    {/* <Link href="/about" asChild>
+      <Pressable className="bg-blue-600 p-4 rounded-md">
+        <Text className="text-white text-center">Go to About</Text>
+      </Pressable>
+    </Link> */}
+-----------------------------------------------------------------------------------------
+
+Router (useRouter)
+useRouter is a hook from Expo Router used to programmatically navigate between screens.
+It lets you do things like router.push("/home") or router.back() inside your components.
+
+const router = useRouter();
+    <Animated.View 
+      // entering={SlideInRight.duration(500)}
+      // exiting={SlideOutRight.duration(500)}
+
+      // entering={FadeIn.duration(500)}
+      // exiting={FadeOut.duration(500)}
+      
+      entering={ZoomIn.duration(500)}
+      exiting={ZoomOut.duration(500)}
+      
+      className="flex-1 items-center justify-center bg-blue-300"
+    >
+
+    <Pressable className="bg-blue-600 p-4 rounded-md" onPress={() => router.push('/about')}>
+-----------------------------------------------------------------------------------------
+
+useWindowDimensions()
+Returns the current width, height, and scale of the device screen, updating automatically on 
+orientation change. Used to create responsive layouts based on screen size.
+
+useDrawerStatus()
+Provides the current status of a navigation drawer (open or closed).
+Useful for triggering UI changes or animations when the drawer state changes.
+
+useLocalSearchParams()
+Gives access to route parameters from the current screen in Expo Router.
+Helps retrieve query params or dynamic route values inside a component.
+
+-----------------------------------------------------------------------------------------
+
+Dynamic Routing
+Dynamic routing allows routes to be generated based on variable parameters (like IDs or slugs) 
+instead of fixed paths.
+It enables a single route structure to handle multiple pages dynamically using URL-based data.
+
+  Done using [name] this way for creating a file :
+
+    const handleNavigation = () => {
+        const username = name.trim();
+        if (username) {
+            router.push(`/${username}` as any);
+        }
+        setName('');
+    }
+  
+  And get value to [name] file as
+    const { name } = useLocalSearchParams();  // parameter name should be same as file name
+-----------------------------------------------------------------------------------------
+
+Nested Routing
+Nested routing allows you to define routes inside other routes, creating a parent–child 
+relationship between screens or pages.
+It helps organize complex layouts where child components render within a parent route’s structure.
+
+  app/index.tsx -> profile
+    from profile -> app/profile/index.tsx
+                    app/profile/settings.tsx
+-----------------------------------------------------------------------------------------
+
+React Hook Form & Yup (yup, yupResolver, Controller, useForm)
+
+yup
+A JavaScript library used for schema-based form validation.
+It helps define rules (like required, email, min length) for form fields.
+
+yupResolver
+A function that connects Yup validation with React Hook Form.
+It allows React Hook Form to validate inputs using a Yup schema.
+
+schema
+An object that defines the validation structure and rules for form data.
+In Yup, it specifies how each field should be validated.
+
+Controller
+A wrapper component from React Hook Form used for controlled inputs.
+It connects external UI components (like TextInput) with form state and validation.
+
+useForm
+A React Hook from React Hook Form used to manage form state and validation.
+It provides methods like control, handleSubmit, formState: { errors }, reset, trigger.
+
+    const { 
+      control, 
+      handleSubmit, 
+      reset, 
+      formState: { errors }, 
+      trigger
+    } = useForm({
+        resolver: yupResolver(schema)
+    });
+-----------------------------------------------------------------------------------------
+
+Clerk Authentication and User Management
+
+Clerk is an authentication and user management service that helps developers easily add login, 
+signup, and user session handling to their apps.
+It provides ready-to-use tools like email/password login, social logins (Google, GitHub), and 
+secure session management without building everything from scratch.
+Clerk handles security, user data, and authentication flows so developers can focus on building 
+their app features.
+
+Webiste https://clerk.com/
+Home Page
+Sign-in Page
+Sign-out Page
+Email verfiy Page
+Welcome Page
+
+-----------------------------------------------------------------------------------------
+STEPS TO INSTALL NATIVEWIND (TAILWIND)
+
+STEP 1 — Install dependencies
+Run this EXACT:
+
+npm install nativewind react-native-reanimated react-native-safe-area-context
+npm install --save-dev tailwindcss@^3.4.17 prettier-plugin-tailwindcss@^0.5.11 babel-preset-expo
+
+STEP 2 — Create Tailwind config
+npx tailwindcss init
+
+Now replace your tailwind.config.js with:
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    "./App.{js,jsx,ts,tsx}",
+    "./components/**/*.{js,jsx,ts,tsx}",
+    "./app/**/*.{js,jsx,ts,tsx}",
+  ],
+  presets: [require("nativewind/preset")],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+};
+
+STEP 3 — Create global CSS file
+
+Create a file in root:
+global.css
+
+Add this:
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+STEP 4 — CREATE Babel config (you don’t have it yet)
+
+Create a new file:
+babel.config.js
+
+Paste this EXACT code:
+module.exports = function (api) {
+  api.cache(true);
+  return {
+    presets: [
+      ["babel-preset-expo", { jsxImportSource: "nativewind" }],
+      "nativewind/babel",
+    ],
+  };
+};
+
+STEP 5 — Create metro config
+
+Create file:
+metro.config.js
+
+Paste this:
+const { getDefaultConfig } = require("expo/metro-config");
+const { withNativeWind } = require("nativewind/metro");
+
+const config = getDefaultConfig(__dirname);
+
+module.exports = withNativeWind(config, { input: "./global.css" });
+
+STEP 6 — Import CSS in App
+
+Open your App.js or App.tsx
+Add this at the TOP:
+import "./global.css";
+
+STEP 7 — Test NativeWind
+
+Replace your App with this:
+
+import { Text, View } from "react-native";
+import "./global.css";
+export default function App() {
+  return (
+    <View className="flex-1 items-center justify-center bg-black">
+      <Text className="text-white text-xl">
+        NativeWind is working 
+      </Text>
+    </View>
+  );
+}
+
+STEP 8 - Create file nativewind-env.d.ts
+
+Create this file nativewind-env.d.ts
+/// <reference types="nativewind/types" />
+
+STEP 9 — Clear cache (VERY IMPORTANT)
+npx expo start -c
+----------------------------------------------------------------------------------------
+
+
+
+        
